@@ -33,12 +33,12 @@ if [[ $server == "paper" ]]; then
 
   download="application"
   [[ $dev == "dev" ]] && download="mojang-mappings"
-  downloadFile=$(curl -s "https://papermc.io/api/v2/projects/paper/versions/$version/builds/$build" | jq -r .downloads.\"$download\".name)
+  downloadFile=$(curl -s "https://api.purpurmc.org/v2/purpur/$version/builds/download" | jq -r .downloads.\"$download\".name)
   jar="$repo/$downloadFile"
 
   # Download paper if jar not exists
   if [[ ! -f $jar ]]; then
-    wget -q "https://papermc.io/api/v2/projects/paper/versions/$version/builds/$build/downloads/$downloadFile" -O "$jar"
+    wget -q "https://api.purpurmc.org/v2/purpur/$version/builds/download" -O "$jar"
   fi
 
 # Spigot
