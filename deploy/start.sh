@@ -20,7 +20,7 @@ while :; do
   *"OpenJ9"* | *"J9"*) JVM_TYPE="openj9" ;;
   esac
 
-  echo "JAR=$JAR"
+  echo "JAR=/opt/mc/test/purpur.jar"
   echo "MEMORY=$MEMORY"
   echo "BACKUP=$BACKUP"
   echo "RESTART=$RESTART"
@@ -34,9 +34,7 @@ while :; do
   # Common JVM Arguments
   jvm_arguments=(
     "-Xmx${MEMORY}G"
-    "-Xms${MEMORY}G"
-    "-Dfile.encoding=UTF-8"
-    "-Dcom.mojang.eula.agree=true"
+    "-Xms16G"
   )
 
   mkdir -p "arguments" && cd "arguments"
@@ -49,7 +47,6 @@ while :; do
 
     if [ "$(printf '%s\n' "$java_version" "9" | sort -V | head -n1)" = "9" ]; then
       echo "DEBUG MODE: JDK9+"
-      jvm_arguments+=("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:$DEBUG_PORT")
     else
       echo "DEBUG MODE: JDK8"
       jvm_arguments+=("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=$DEBUG_PORT")
@@ -58,18 +55,13 @@ while :; do
 
   jvm_arguments+=(
     "-jar"
-    "$JAR"
+    "/opt/mc/test/purpur.jar"
   )
 
-  [[ $PLAYERS -gt -1 ]] && jvm_arguments+=("-s$PLAYERS")
-  [[ ! -z $PLUGINS ]] && jvm_arguments+=("-P$PLUGINS")
-  [[ ! -z $WORLDS ]] && jvm_arguments+=("-W$WORLDS")
-  [[ $PORT -gt -1 ]] && jvm_arguments+=("-p$PORT")
-  jvm_arguments+=("--nogui")
 
-  echo "Parameters: ${jvm_arguments[@]}"
+  echo "Parameters: screen -d -m -S mcserver -Xms16G -Xmx36G --add-modules jdk.incubator.vector -XX:+ClassUnloadingWithConcurrentMark -XX:+UseShenandoahGC -XX:-DontCompileHugeMethods -jar purpur.jar"
 
-  java "${jvm_arguments[@]}"
+  screen -d -m -S mcserver java -Xms16G -Xmx36G --add-modules jdk.incubator.vector -XX:+ClassUnloadingWithConcurrentMark -XX:+UseShenandoahGC -XX:-DontCompileHugeMethods -jar /opt/mc/test/purpur.jar
 
   if [[ $BACKUP = true ]]; then
     cancel=
