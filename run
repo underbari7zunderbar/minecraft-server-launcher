@@ -1,9 +1,7 @@
 #!/bin/bash
 
-####################### Configuration Section #####################
-
-# Use following variables as global-scope
-set -a
+# This is a sample settings.env for setting up
+# minecraft-server-launcher with environment variables
 
 ######################## Upstream Settings #########################
 REPO_BASE_URL="https://raw.githubusercontent.com/monun/minecraft-server-launcher"
@@ -14,13 +12,13 @@ REPO_DEPLOY="$REPO_ROOT/deploy"
 
 ########################## Configurations ##########################
 ## Server directory name
-DIR="server"
+DIR="test"
 
-## Server type (local path or type[vanilla, spigot, paper]-version[1.xx.x, unspecified]-build[latest, unspecified, xx]-[dev])
-SERVER="paper-1.19.3-latest"
+## Server type (local path or type[vanilla, spigot, paper]-version[1.xx.x, unspecified]-build[latest, unspecified,d xx]-[dev])
+SERVER="paper-1.20.1-latest-dev"
 
 ## Server memory (GB)
-MEMORY=4
+MEMORY=32
 
 ## When the server shuts down, use tar to back up.
 BACKUP=false
@@ -36,10 +34,10 @@ PLAYERS=100
 PLUGINS="plugins"
 
 ## This parameter will put all worlds your server uses into a specific directory, it's useful if you have many folders inside in the main server directory.
-WORLDS="worlds"
+WORLDS=""
 
 ## Server port, default value from server.properties (25565)
-PORT=-1
+PORT=25565
 
 ## jdwp port, Enable debug mode when 0 or higher (5005)
 DEBUG_PORT=-1
@@ -51,20 +49,3 @@ DEFAULT_PLUGINS=(
 
 # Uncomment to enable OpenJ9 performance tuning for VMs
 # VIRTUALIZED=true
-
-# Use following variables as local-scope
-set +a
-
-####################### End of Configuration ######################
-
-# Download itself if it is running from stdout (installation phase)
-[[ -t 1 ]] && [[ ! -f ./run ]] && wget -q -c --content-disposition -P . -N "$REPO_ROOT/run" >/dev/null && chmod +x ./run >/dev/null
-
-# Setup target directory
-mkdir -p "$DIR" && cd "$DIR" || exit
-[[ -d ../deploy ]] && cp -R ../deploy/* .
-
-[[ ! -f ./startSetup ]] && wget -q -c --content-disposition -P . -N "$REPO_DEPLOY/startSetup" >/dev/null
-
-chmod +x ./startSetup
-./startSetup "${DEFAULT_PLUGINS[@]}"
